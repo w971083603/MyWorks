@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.mapper.UserYearMapper">
+
+    <select id="selectList" parameterType="java.util.Map" resultType="com.platform.entity.UserYearEntity">
+        SELECT
+        a.id,
+        a.user_id as userId,
+        a.working_hours as workingHours,
+        a.overtime_work_hours as overtimeWorkHours,
+        a.break_time as breakTime,
+        a.time_of_word as timeOfWord,
+        a.annual_holiday as annualHoliday,
+        b.login_number as loginNumber,
+        b.name
+        FROM
+            m_user_year a,m_sys_user b
+        WHERE
+        a.user_id=b.id
+        <if test=" loginNumber != null and loginNumber != '' ">
+            and b.login_number LIKE CONCAT('%',CONCAT(#{loginNumber},'%') )
+        </if>
+        <if test=" name != null and name != '' ">
+            and b.name LIKE CONCAT('%',CONCAT(#{name},'%') )
+        </if>
+        order by a.id desc
+    </select>
+
+
+</mapper>

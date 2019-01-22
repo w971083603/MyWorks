@@ -1,0 +1,76 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<!-- 使用spring自带的占位符替换功能s -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- 允许JVM参数覆盖 -->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<!-- 忽略没有找到的资源文件 -->
+		<property name="ignoreResourceNotFound" value="true" />
+		<!-- 配置资源-文件 -->
+		<property name="locations">
+			<list>
+				<value>classpath:log4j.properties</value>
+				<value>classpath:environment/env-product-new.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--声明式事务失效 根本原因：由子容器扫描装配了@Service 注解的实例。-->
+	<!--spring的context是父子容器，由ServletContextListener 加载spring配置文件产生的是父容器，springMVC加载配置文件产生的是子容器，
+	    子容器对Controller进行扫描装配时装配了@Service注解的实例 (@Controller 实例依赖@Service实例)，
+	    而该实例理应由父容器进行初始化以保证事务的增强处理，所以此时得到的将是原样的Service（没有经过事务加强处理，故而没有事务处理能力。-->
+	<!--解决办法：不扫描带有@Controller注解的类 ,让 springMVC 子容器加载。-->
+	<context:component-scan base-package="com.platform">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<task:annotation-driven />
+
+	<!--初始化appliationUtil类，并完成ApplicationContext的注入-->
+	<bean id="springContextUtil" class="com.platform.commons.utils.SpringContextUtil"/>
+
+	<!-- 定义数据源 数据库连接池(BoneCP)-->
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+		destroy-method="close">
+		<!-- 数据库驱动 -->
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<!-- 相应驱动的jdbcUrl -->
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<!-- 数据库的用户名 -->
+		<property name="username" value="${jdbc.username}" />
+		<!-- 数据库的密码 -->
+		<property name="password" value="${jdbc.password}" />
+		<!-- 连接池中未使用的链接最大存活时间(分) 默认：240，如果要取消则设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="30"/>
+		<!-- 每个分区最大的连接数 判断依据：请求并发数-->
+		<property name="maxConnectionsPerPartition" value="20" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="5" />
+		<!-- 检查数据库连接池中空闲连接的间隔时间(分) 默认：240 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="30"/>
+		<!-- 获取某个connection失败之后会多次尝试重新连接，如果在这几次还是失败则放弃。 -->
+		<property name="acquireRetryAttempts" value="3"/>
+
+	</bean>
+
+	<!--系统参数-->
+	<bean id="systemConfig" class="com.platform.commons.utils.SystemConfig">
+		<property name="URL_BASE_CMS" value="${config.system.url.base.cms}"/>
+	</bean>
+
+	<!-- 上传文件 -->  
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+	    <property name="defaultEncoding" value="utf-8" />  
+	    <!-- 以字节为单位的最大上传文件的大小 -->    
+	    <property name="maxUploadSize" value="100000" />  
+    </bean>
+
+
+</beans>

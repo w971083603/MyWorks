@@ -1,0 +1,82 @@
+.login-page{
+    width:100%;heght:100%;background-image: url('../../apiresources/img/xinghe3.jpg')
+}
+.col-xs-4{
+    margin: auto;width: 60%;background-color: #fff;float: none;
+}
+.skin-blue .main-header .logo {
+    background-color: #99CCFF;
+    height: 90px;
+    font-size: 35px;
+    line-height: 80px;
+    border-bottom: 0 solid transparent;
+    color: #111;
+}
+.skin-blue .main-header .navbar {
+    background-color: #99CCFF;height: 90px;
+}
+.skin-blue .sidebar a {
+    color: #111;
+}
+.skin-blue .treeview-menu>li>a {
+    color: #FFFFFF;
+}
+.skin-blue .sidebar-menu>li:hover>a, .skin-blue .sidebar-menu>li.active>a {
+    color: #fff;
+    background: #1e282c;
+    border-left-color: #3c8dbc;
+}
+
+.fixed .content-wrapper, .fixed .right-side {
+    padding-top: 90px;
+}
+
+.slimScrollDiv{
+    top:40px;background-color: #99CCFF;
+}
+.main-header .navbar-custom-menu, .main-header .navbar-right {
+    float: right;
+    height: 100%;
+    width: 200px;
+}
+.navbar-nav {
+    height: 100%;
+    width: 100%;
+}
+.navbar-nav>.user-menu .user-image {
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-top: 7px;
+}
+.skin-blue .main-header .navbar .nav>li>a {
+    color: #444;
+    line-height: 51px;
+    font-size: 20px;
+    height: 90px;
+}
+.navbar-custom-menu>.navbar-nav>li>.dropdown-menu {
+    position: absolute;
+    right: 0;
+    left: auto;
+    top: 89px;
+    margin: 0;
+    padding: 0;
+}
+.navbar-nav>.user-menu>.dropdown-menu>li.user-header>p {
+    z-index: 5;
+    color: #333;
+    font-size: 17px;
+    margin-top: 10px;
+}
+.navbar-nav>li {
+    float:   none;
+}
+.skin-blue .main-header .navbar .nav .open>a{
+    height: 90px;
+}
+.navbar-nav>.user-menu>.dropdown-menu>li.user-header {
+    background-color: #99CCFF;
+}

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.mapper.UserMapper">
+
+
+    <select id="countUserByLoginNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT  count(*) FROM  m_sys_user WHERE login_number=#{loginNumber} order by id desc
+    </select>
+
+
+    <select id="selectUserList" parameterType="java.util.Map" resultType="com.platform.entity.vo.UserVo">
+        SELECT
+        a.id,
+        a.name,
+        a.phone,
+        a.login_number as loginNumber,
+        a.department,
+        a.station,
+        a.user_status as userStatus,
+        a.create_time as createTime,
+        b.name as addressName
+        FROM m_sys_user a,m_address b
+        WHERE
+        a.role_id != 1
+        and a.address_id = b.id
+        <if test="rolesstr != null and  rolesstr == '2'.toString() ">
+            and a.id=#{loginUserId}
+        </if>
+        <if test="addressId != null and  addressId != '' ">
+            and a.address_id=#{addressId}
+        </if>
+        <if test="searchAddressId != null and  searchAddressId != '' ">
+            and a.address_id=#{searchAddressId}
+        </if>
+        <if test=" loginNumber != null and loginNumber != '' ">
+            and a.login_number LIKE CONCAT('%',CONCAT(#{loginNumber},'%') )
+        </if>
+        <if test=" name != null and name != '' ">
+            and a.name LIKE CONCAT('%',CONCAT(#{name},'%') )
+        </if>
+        <if test=" phone != null and phone != '' ">
+            and a.phone LIKE CONCAT('%',CONCAT(#{phone},'%') )
+        </if>
+        order by a.id desc
+    </select>
+
+    <select id="findByLoginNumber" parameterType="java.lang.String" resultType="com.platform.entity.UserEntity">
+        SELECT
+            a.id,
+            a.name,
+            a.phone,
+            a.password,
+            a.role_id as roleId,
+            a.login_number as loginNumber,
+            a.department,
+            a.station,
+            a.user_status as userStatus,
+            a.create_time as createTime,
+            a.last_time as lastTime,
+            a.address_id as addressId
+         FROM  m_sys_user a
+         WHERE
+            a.login_number = #{loginNumber} or a.phone = #{loginNumber}
+    </select>
+
+
+</mapper>

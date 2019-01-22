@@ -1,0 +1,24 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+">
+
+	<!-- 配置mybatis的SqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
+		<!-- 数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- mybatis的全局配置文件 -->
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+		<!-- 配置mapper.xml映射的路径 , 可以使用 通配符代码多个文件 -->
+		<property name="mapperLocations" value="classpath:mybatis/mappers/*.xml"></property>
+		<!-- 别名扫描包 -->
+		<property name="typeAliasesPackage" value="com.platform.entity"/>
+	</bean>
+	
+	<!-- mapper接口扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- mapper接口包 -->
+		<property name="basePackage" value="com.platform.mapper"/>
+	</bean>
+
+</beans>

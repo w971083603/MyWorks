@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.mapper.UserDayMapper">
+
+    <select id="selectList" parameterType="java.util.Map" resultType="com.platform.entity.UserDayEntity">
+        SELECT
+        a.id,
+        a.days,
+        a.week,
+        a.user_id as userId,
+        a.working_hours as workingHours,
+        a.overtime_work_hours as overtimeWorkHours,
+        a.break_time as breakTime,
+        a.less_time as lessTime,
+        a.late_time as lateTime,
+        a.not_hit_time as notHitTime,
+        a.time_of_word as timeOfWord,
+        a.annual_holiday as annualHoliday,
+        a.record_time as recordTime,
+        a.last_time as lastTime,
+        b.login_number as loginNumber,
+        b.name
+        FROM
+        m_user_day a,m_sys_user b
+        WHERE
+        a.user_id=b.id
+        <if test="rolesstr != null and  rolesstr == '2'.toString() ">
+            and a.user_id=#{loginUserId}
+        </if>
+        <if test="addressId != null and  addressId != '' ">
+            and b.address_id=#{addressId}
+        </if>
+        <if test=" loginNumber != null and loginNumber != '' ">
+            and b.login_number LIKE CONCAT('%',CONCAT(#{loginNumber},'%') )
+        </if>
+        <if test=" name != null and name != '' ">
+            and b.name LIKE CONCAT('%',CONCAT(#{name},'%') )
+        </if>
+        <if test=" registerStartTime != null and registerStartTime != '' ">
+            and a.record_time &gt;= #{registerStartTime}
+        </if>
+        <if test=" registerEndTime != null and registerEndTime != '' ">
+            and a.record_time &lt;= #{registerEndTime}
+        </if>
+        order by a.days desc
+    </select>
+
+
+    <select id="countAll" parameterType="java.util.Map" resultType="com.platform.commons.utils.PageData">
+		SELECT
+            date_format(a.record_time,'%Y-%m') as recordTime,
+            a.user_id as userId,
+            b.name,
+            b.login_number as loginNumber,
+            sum(a.working_hours) as workingHours,
+            sum(a.overtime_work_hours) as overtimeWorkHours,
+            (SELECT sum(overtime_work_hours-break_time) as time
+              FROM `m_user_day`
+                where a.user_id = user_id AND date_format(record_time,'%Y-%m')	&lt;= #{endMonth} ) as lessTime,
+            sum(a.break_time ) as breakTime,
+            sum( a.late_time) as lateTime,
+            sum(a.not_hit_time) as notHitTime
+        FROM
+            m_user_day a,m_sys_user b
+        WHERE
+            a.user_id=b.id
+            <if test="addressId != null and addressId != ''">
+                and b.address_id = #{addressId}
+            </if>
+        group by date_format(a.record_time,'%Y-%m'),a.user_id
+		HAVING 1=1 and recordTime = #{endMonth}
+		ORDER BY recordTime desc
+
+    </select>
+
+
+
+    <select id="countAllEvery" parameterType="java.util.Map" resultType="com.platform.commons.utils.PageData">
+		SELECT
+            a.user_id as userId,
+            b.name,
+            b.login_number as loginNumber,
+            sum(a.working_hours) as workingHours,
+            sum(a.overtime_work_hours) as overtimeWorkHours,
+            sum(a.break_time ) as breakTime,
+            sum(a.overtime_work_hours - a.break_time) as lessTime,
+            sum( a.late_time) as lateTime,
+            sum(a.not_hit_time) as notHitTime
+        FROM
+            m_user_day a,m_sys_user b
+        WHERE
+            a.user_id=b.id
+            <if test="addressId != null and addressId != ''">
+                and b.address_id = #{addressId}
+            </if>
+            <if test="endDay != null and endDay != ''">
+                and a.record_time &lt;= #{endDay}
+            </if>
+        group by a.user_id
+		ORDER BY b.login_number desc
+
+    </select>
+
+
+    <select id="countAllForDay" parameterType="java.util.Map" resultType="com.platform.commons.utils.PageData">
+		SELECT
+            date_format(a.record_time,'%Y-%m-%d') as recordTime,
+            a.user_id as userId,
+            b.login_number as loginNumber,
+            b.name,
+            a.working_hours as workingHours,
+            a.overtime_work_hours as overtimeWorkHours,
+            a.break_time as breakTime,
+            a.overtime_work_hours - a.break_time as lessTime,
+            a.late_time as lateTime,
+            a.not_hit_time as notHitTime
+        FROM
+            m_user_day a,m_sys_user b
+        WHERE
+            a.user_id=b.id
+            <if test="addressId != null and addressId != ''">
+                and b.address_id = #{addressId}
+            </if>
+		ORDER BY a.record_time,b.login_number
+    </select>
+
+
+</mapper>
